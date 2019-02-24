@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>demo</title>
+</head>
+
+<body>
+    <button id="btn">登录</button>
+    <script>
+        document.querySelector("#btn").addEventListener('click', () => {
+            ajax({
+                type: 'GET',
+                url: '/cgi/login',
+                data: {
+                },
+                success: (data) => {
+                   
+                }
+            })
+        }, false)
+        function ajax(options = {}) {
+            options.type = (options.type || 'GET').toUpperCase();
+            options.dataType = options.dataType || 'json';
+            let params = JSON.stringify(options.data || {});
+            let xhr;
+            if (window.XMLHttpRequest) {
+                 xhr = new XMLHttpRequest();
+            } else {
+                 xhr = new ActiveXObject('Microsoft.XMLHTTP');
+            }
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    var status = xhr.status;
+                    if (status >= 200 && status < 300) {
+                        options.success && options.success(xhr.responseText, xhr.responseXML);
+                    } else {
+                        options.fail && options.fail(status);
+                    }
+                }
+            }
+
+            if (options.type == 'GET') {
+                xhr.open('GET', options.url + '?' + params, true);
+                xhr.withCredentials = true;
+                xhr.send(null);
+            } else if (options.type == 'POST') {
+                xhr.open('POST', options.url, true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.withCredentials = true;
+                xhr.send(params);
+            }
+        }
+    </script>
+</body>
+
+</html>
+
+<!-- test for xss -->
+<!-- <img src="http://image2.sina.com.cn/home/images/sina_logo2.gif" width="0" height="0" border="0" onload="javascript:ajax({data: document.cookie, url:'/cgi/query'});"> -->
